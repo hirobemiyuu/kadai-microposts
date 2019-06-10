@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_05_070952) do
+ActiveRecord::Schema.define(version: 2019_06_10_014619) do
+
+  create_table "favorites", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "favorite_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["favorite_id"], name: "index_favorites_on_favorite_id"
+    t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
 
   create_table "microposts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "content"
@@ -30,6 +39,24 @@ ActiveRecord::Schema.define(version: 2019_06_05_070952) do
     t.index ["user_id"], name: "index_relationships_on_user_id"
   end
 
+  create_table "stars", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "favorite_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["favorite_id"], name: "index_stars_on_favorite_id"
+    t.index ["user_id", "favorite_id"], name: "index_stars_on_user_id_and_favorite_id", unique: true
+    t.index ["user_id"], name: "index_stars_on_user_id"
+  end
+
+  create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "content"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_tasks_on_user_id"
+  end
+
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -38,7 +65,12 @@ ActiveRecord::Schema.define(version: 2019_06_05_070952) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "favorites", "microposts", column: "favorite_id"
+  add_foreign_key "favorites", "users"
   add_foreign_key "microposts", "users"
   add_foreign_key "relationships", "users"
   add_foreign_key "relationships", "users", column: "follow_id"
+  add_foreign_key "stars", "microposts", column: "favorite_id"
+  add_foreign_key "stars", "users"
+  add_foreign_key "tasks", "users"
 end
